@@ -1,55 +1,227 @@
 <!DOCTYPE html>
-<html>
-    <head>  
-        <meta name="description" content="Access the world wide web">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="css/index.css">
-        <link rel="icon" href="" id="favicon">
-        <script src="./script/particles.js"></script>
-        <!--script async>
-            // Incognito analytics
-            // Only tracks user visits!
-            // Remove when needed.
-            navigator.sendBeacon('./data/visit');
-            (async() => {
-                const res = await fetch('./data/create-id');
-                const id = await res.text();
-    
-                setInterval(() => {
-                    navigator.sendBeacon('./data/keep-alive', id);
-                }, 15000)
-    
-                window.addEventListener('beforeunload', () => {
-                    navigator.sendBeacon('./data/destroy', id);
-                });
-    
-            })();
-        </script-->
-    </head>
-    <body>
-        <script>
-            document.body.setAttribute('data-appearance', (localStorage.getItem('incog||appearance')))
-        </script>
-        <header data-init>
-            <div class="search"></div>
-            <nav></nav>
-            <a id="open-nav"><i style="color: var(--accent)" class="fas fa-sliders-h secondary"></i></a>
-            <a id="close-nav">close</a>
-        </header>
-        <main></main>
-        <div style="display: none" class="access-panel">
-            <div class="controls">
-                <img class="icon" src="img/globe.svg">
-                <input disabled="disabled" value="">
-                <button class="interact access-link" style="margin-right: 5px">attachment</button>
-                <button class="interact refresh-access" style="margin-right: 5px">refresh</button>
-                <button class="interact close-access">close</button>
-            </div>
-            <!--button class="toggle">expand_more</button-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Proxy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50px, -50px); }
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 50px 40px;
+            border-radius: 25px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+            max-width: 650px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 50px;
+        }
+        
+        h1 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 16px;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        #url-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 17px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        #url-input:focus {
+            outline: none;
+            border-color: #7e22ce;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(126, 34, 206, 0.1);
+        }
+        
+        #go-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        #go-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        #go-button:active {
+            transform: translateY(0);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .feature {
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 35px 25px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🔒</div>
+        <h1>Secure Proxy</h1>
+        <p class="subtitle">Browse freely and privately</p>
+        
+        <div class="search-container">
+            <input 
+                type="text" 
+                id="url-input" 
+                placeholder="Enter URL or search term..."
+                autofocus
+            >
         </div>
-        <iframe src="about:blank" class="access-frame" style="position: absolute; overflow-x: hidden; width: 100%; height: 100%; display: none; border: none; background: #FFF;"></iframe>
-        <form id="access-form"></form>
-        <div class="particles"></div>
-        <script src="script/index.js" type="module"></script>
-    </body>
+        
+        <button id="go-button">🚀 Go Secure</button>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div>Fast Browsing</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🛡️</div>
+                <div>Private Access</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌍</div>
+                <div>Unrestricted</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/uv/uv.bundle.js"></script>
+    <script src="/uv/uv.config.js"></script>
+    <script>
+        const input = document.getElementById('url-input');
+        const goButton = document.getElementById('go-button');
+        
+        function navigate() {
+            let url = input.value.trim();
+            if (!url) return;
+            
+            if (!url.includes('://')) {
+                if (url.includes('.') && !url.includes(' ')) {
+                    url = 'https://' + url;
+                } else {
+                    url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+                }
+            }
+            
+            window.navigator.serviceWorker.register('./sw.js', {
+                scope: __uv$config.prefix
+            }).then(() => {
+                let frame = document.createElement('iframe');
+                frame.style.position = 'fixed';
+                frame.style.top = '0';
+                frame.style.left = '0';
+                frame.style.width = '100%';
+                frame.style.height = '100%';
+                frame.style.border = 'none';
+                frame.style.zIndex = '9999';
+                frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+                document.body.appendChild(frame);
+            });
+        }
+        
+        goButton.addEventListener('click', navigate);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') navigate();
+        });
+    </script>
+</body>
 </html>
